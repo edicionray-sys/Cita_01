@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Una Aventura Especial 🏔️❤️️</title>
+    <title>Una Aventura Especial 🏔️❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -247,17 +247,17 @@
 
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-top: 15px;
         }
 
         .gallery-item {
             width: 100%;
-            height: 160px;
+            height: 220px;
             object-fit: cover;
             border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .share-btn {
@@ -309,8 +309,8 @@
     </div>
 
     <div class="invitation-card">
-        <h1 class="title">Ruta de Amor & Aventura</h1>
-        <div class="subtitle">Invitación Oficial de Hiking</div>
+        <h1 class="title">Una nueva ruta</h1>
+        <div class="subtitle">Invitación Para mi pequitas</div>
         
         <textarea class="message-input edit-only" id="custom-message" placeholder="Escribe tu mensaje aquí...">¿Te gustaría caminar conmigo hasta donde el cerro de la virgen marca el final? Esta es una aventura que juntos quiero lograr. Sé que cansados podemos estar por la carrera de la mañana pero juntos podremos cualquier cosa, por ejemplo subir un cerro jeje ❤️</textarea>
         
@@ -343,13 +343,9 @@
         </div>
 
         <div class="gallery-frame border-rosas" id="gallery-frame">
-            <input type="file" id="image-upload" multiple accept="image/*" class="edit-only" style="display: none;" onchange="handleImageUpload(event)">
-            <button class="edit-only" onclick="document.getElementById('image-upload').click()" style="background: #f0f0f0; border: 1px dashed #aaa; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 0 auto 15px auto;">
-                📸 Añadir Fotos (Opcional)
-            </button>
-            
             <div class="gallery-grid" id="gallery-grid">
-                <!-- Sin imágenes por defecto -->
+                <img src="foto1.jpg" class="gallery-item" alt="Momento juntos 1">
+                <img src="foto2.jpg" class="gallery-item" alt="Momento juntos 2">
             </div>
         </div>
     </div>
@@ -443,22 +439,6 @@
         currentBorder = borderKey;
     }
 
-    function handleImageUpload(event) {
-        const files = event.target.files;
-        const grid = document.getElementById('gallery-grid');
-
-        for (let file of files) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'gallery-item';
-                grid.appendChild(img);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
     function generateShareLink() {
         const msg = encodeURIComponent(document.getElementById('custom-message').value);
         const date = encodeURIComponent(document.getElementById('event-date').value);
@@ -474,14 +454,11 @@
         });
     }
 
-    // Inicializar al cargar
     window.onload = function() {
-        // Establecer fecha por defecto (6 de Octubre de 2026 a las 15:00)
         document.getElementById('event-date').value = "2026-10-06T15:00";
 
         const urlParams = new URLSearchParams(window.location.search);
 
-        // Si la URL contiene un mensaje personalizado, se activa MODO VISTA (para ella)
         if (urlParams.has('msg')) {
             document.body.classList.add('mode-view');
             
@@ -500,12 +477,6 @@
             if (urlParams.has('border')) {
                 const borderVal = decodeURIComponent(urlParams.get('border'));
                 setBorder('border-' + borderVal, null, borderVal);
-            }
-
-            // Ocultar la sección de galería si no hay imágenes
-            const grid = document.getElementById('gallery-grid');
-            if (grid.children.length === 0) {
-                document.querySelector('.gallery-section').style.display = 'none';
             }
         }
         
