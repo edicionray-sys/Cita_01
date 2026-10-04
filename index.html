@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invitación a la Aventura 🏔️❤️</title>
+    <title>Una Aventura Especial 🏔️❤️️</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@400;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -98,8 +98,22 @@
         }
 
         .seal-option.selected {
-            border-color: #gold;
+            border-color: #ffd700;
             transform: scale(1.1);
+        }
+
+        .seal-display {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.3);
+            margin-top: 10px;
         }
 
         /* Mensaje de la Invitación */
@@ -143,6 +157,15 @@
             resize: vertical;
             text-align: center;
             outline: none;
+        }
+
+        .message-view {
+            font-family: 'Caveat', cursive;
+            font-size: 2rem;
+            line-height: 1.5;
+            color: #1a3311;
+            padding: 15px;
+            white-space: pre-wrap;
         }
 
         /* Contador Regresivo */
@@ -192,6 +215,7 @@
             display: flex;
             justify-content: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .border-btn {
@@ -217,9 +241,9 @@
         }
 
         /* Estilos de Bordes Florales */
-        .border-rosas { border: 10px solid #e8a5a5; border-image: linear-gradient(to right, #e8a5a5, #dd7b7b) 1; }
-        .border-silvestre { border: 10px solid #8fad88; border-image: linear-gradient(to right, #8fad88, #5c8254) 1; }
-        .border-pino { border: 10px solid #5c4033; border-image: linear-gradient(to right, #5c4033, #3b281f) 1; }
+        .border-rosas { border: 8px solid #e8a5a5; }
+        .border-silvestre { border: 8px solid #8fad88; }
+        .border-pino { border: 8px solid #5c4033; }
 
         .gallery-grid {
             display: grid;
@@ -230,9 +254,10 @@
 
         .gallery-item {
             width: 100%;
-            height: 150px;
+            height: 160px;
             object-fit: cover;
             border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
         }
 
         .share-btn {
@@ -252,6 +277,13 @@
         .share-btn:hover {
             transform: translateY(-2px);
         }
+
+        /* Elementos ocultables */
+        .edit-only { display: block; }
+        .view-only { display: none; }
+
+        body.mode-view .edit-only { display: none !important; }
+        body.mode-view .view-only { display: block !important; }
     </style>
 </head>
 <body>
@@ -263,12 +295,16 @@
     </button>
 
     <div class="envelope-wrapper">
-        <h3>Elige el Sello de Cera para tu Sobre</h3>
-        <div class="wax-seal-selector">
+        <h3 class="edit-only">Elige el Sello de Cera para tu Sobre</h3>
+        <div class="wax-seal-selector edit-only">
             <div class="seal-option selected" onclick="selectSeal(this, '❤️')">❤️</div>
             <div class="seal-option" onclick="selectSeal(this, '🧭')">🧭</div>
             <div class="seal-option" onclick="selectSeal(this, '🌿')">🌿</div>
-            <div class="seal-option" onclick="selectSeal(this, '🏔️️')">🏔️</div>
+            <div class="seal-option" onclick="selectSeal(this, '🏔️')">🏔️</div>
+        </div>
+        <div class="view-only">
+            <p style="font-size:0.9rem; color:#666;">Invitación sellada especialmente para ti</p>
+            <div class="seal-display" id="seal-view">❤️</div>
         </div>
     </div>
 
@@ -276,11 +312,13 @@
         <h1 class="title">Ruta de Amor & Aventura</h1>
         <div class="subtitle">Invitación Oficial de Hiking</div>
         
-        <textarea class="message-input" id="custom-message" placeholder="Escribe tu mensaje romántico de explorador aquí...">¡Hola mi amor! Te invito a una aventura especial para caminar juntos al cerro, respirar aire fresco y disfrutar del atardecer mano a mano. ¿Aceptas el reto?</textarea>
+        <textarea class="message-input edit-only" id="custom-message" placeholder="Escribe tu mensaje aquí...">¿Te gustaría caminar conmigo hasta donde el cerro de la virgen marca el final? Esta es una aventura que juntos quiero lograr. Sé que cansados podemos estar por la carrera de la mañana pero juntos podremos cualquier cosa, por ejemplo subir un cerro jeje ❤️</textarea>
         
-        <div style="margin-top: 20px;">
+        <div class="message-view view-only" id="message-display"></div>
+
+        <div class="edit-only" style="margin-top: 20px;">
             <label for="event-date" style="font-weight: 600; font-size: 0.9rem;">Fecha de la Cita: </label>
-            <input type="datetime-local" id="event-date" onchange="updateCountdown()" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+            <input type="datetime-local" id="event-date" onchange="updateCountdown()" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
         </div>
     </div>
 
@@ -295,41 +333,42 @@
     </div>
 
     <div class="gallery-section">
-        <h3>Galería de Recuerdos Especiales</h3>
-        <p style="font-size: 0.85rem; color: #666;">Selecciona un borde floral para enmarcar las fotos:</p>
+        <h3>Galería de Recuerdos</h3>
         
-        <div class="border-picker">
-            <button class="border-btn active" onclick="setBorder('border-rosas', this)">Rosas Románticas</button>
-            <button class="border-btn" onclick="setBorder('border-silvestre', this)">Bosque Silvestre</button>
-            <button class="border-btn" onclick="setBorder('border-pino', this)">Pino Campestre</button>
+        <div class="border-picker edit-only">
+            <span style="font-size: 0.85rem; width: 100%; display: block; color: #666; margin-bottom: 5px;">Elige el borde floral:</span>
+            <button class="border-btn active" onclick="setBorder('border-rosas', this, 'rosas')">Rosas Románticas</button>
+            <button class="border-btn" onclick="setBorder('border-silvestre', this, 'silvestre')">Bosque Silvestre</button>
+            <button class="border-btn" onclick="setBorder('border-pino', this, 'pino')">Pino Campestre</button>
         </div>
 
         <div class="gallery-frame border-rosas" id="gallery-frame">
-            <input type="file" id="image-upload" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-            <button onclick="document.getElementById('image-upload').click()" style="background: #f0f0f0; border: 1px dashed #aaa; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin-bottom: 15px;">
-                📸 Añadir Fotos de Nosotros
+            <input type="file" id="image-upload" multiple accept="image/*" class="edit-only" style="display: none;" onchange="handleImageUpload(event)">
+            <button class="edit-only" onclick="document.getElementById('image-upload').click()" style="background: #f0f0f0; border: 1px dashed #aaa; padding: 10px 20px; border-radius: 6px; cursor: pointer; margin: 0 auto 15px auto;">
+                📸 Añadir Fotos (Opcional)
             </button>
+            
             <div class="gallery-grid" id="gallery-grid">
-                <img src="https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=400&q=80" class="gallery-item" alt="Hiking 1">
-                <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=400&q=80" class="gallery-item" alt="Hiking 2">
+                <!-- Sin imágenes por defecto -->
             </div>
         </div>
     </div>
 
-    <button class="share-btn" onclick="generateShareLink()">🔗 Copiar Enlace para Enviar</button>
+    <button class="share-btn edit-only" onclick="generateShareLink()">🔗 Copiar Enlace Personalizado para Enviar</button>
 </div>
 
 <script>
-    // Música suave de violín sintética (Web Audio API)
     let audioCtx = null;
     let isPlaying = false;
     let timerInterval = null;
+    let currentSeal = '❤️';
+    let currentBorder = 'rosas';
 
     function playViolinNotes() {
         if (!isPlaying) return;
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00]; // Escala suave
+        const notes = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00];
         const note = notes[Math.floor(Math.random() * notes.length)];
 
         const osc = audioCtx.createOscillator();
@@ -362,14 +401,12 @@
         }
     }
 
-    // Configurar Fecha por Defecto (7 días adelante)
-    const defaultDate = new Date();
-    defaultDate.setDate(defaultDate.getDate() + 7);
-    document.getElementById('event-date').value = defaultDate.toISOString().slice(0, 16);
-
     function updateCountdown() {
         clearInterval(timerInterval);
-        const targetDate = new Date(document.getElementById('event-date').value).getTime();
+        const dateInput = document.getElementById('event-date').value;
+        if (!dateInput) return;
+
+        const targetDate = new Date(dateInput).getTime();
 
         timerInterval = setInterval(() => {
             const now = new Date().getTime();
@@ -391,22 +428,21 @@
         }, 1000);
     }
 
-    // Selección de Sello de Cera
     function selectSeal(element, sealIcon) {
         document.querySelectorAll('.seal-option').forEach(el => el.classList.remove('selected'));
         element.classList.add('selected');
+        currentSeal = sealIcon;
     }
 
-    // Bordes Florales
-    function setBorder(className, button) {
+    function setBorder(className, button, borderKey) {
         document.querySelectorAll('.border-btn').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
+        if (button) button.classList.add('active');
         
         const frame = document.getElementById('gallery-frame');
         frame.className = 'gallery-frame ' + className;
+        currentBorder = borderKey;
     }
 
-    // Cargar Imágenes
     function handleImageUpload(event) {
         const files = event.target.files;
         const grid = document.getElementById('gallery-grid');
@@ -423,26 +459,56 @@
         }
     }
 
-    // Generar Enlace Compartible
     function generateShareLink() {
         const msg = encodeURIComponent(document.getElementById('custom-message').value);
         const date = encodeURIComponent(document.getElementById('event-date').value);
-        const shareUrl = `${window.location.origin}${window.location.pathname}?msg=${msg}&date=${date}`;
+        const seal = encodeURIComponent(currentSeal);
+        const border = encodeURIComponent(currentBorder);
+
+        const shareUrl = `${window.location.origin}${window.location.pathname}?msg=${msg}&date=${date}&seal=${seal}&border=${border}`;
 
         navigator.clipboard.writeText(shareUrl).then(() => {
-            alert('¡Enlace copiado al portapapeles! Ahora puedes enviárselo a tu pareja por WhatsApp o mensaje.');
+            alert('¡Enlace personalizado copiado! Ya puedes enviárselo a ella por WhatsApp.');
+        }).catch(() => {
+            prompt('Copia este enlace para enviarlo:', shareUrl);
         });
     }
 
-    // Cargar Parámetros de la URL al Abrir
+    // Inicializar al cargar
     window.onload = function() {
+        // Establecer fecha por defecto (6 de Octubre de 2026 a las 15:00)
+        document.getElementById('event-date').value = "2026-10-06T15:00";
+
         const urlParams = new URLSearchParams(window.location.search);
+
+        // Si la URL contiene un mensaje personalizado, se activa MODO VISTA (para ella)
         if (urlParams.has('msg')) {
-            document.getElementById('custom-message').value = decodeURIComponent(urlParams.get('msg'));
+            document.body.classList.add('mode-view');
+            
+            const msgText = decodeURIComponent(urlParams.get('msg'));
+            document.getElementById('message-display').innerText = msgText;
+
+            if (urlParams.has('date')) {
+                document.getElementById('event-date').value = decodeURIComponent(urlParams.get('date'));
+            }
+
+            if (urlParams.has('seal')) {
+                const sealVal = decodeURIComponent(urlParams.get('seal'));
+                document.getElementById('seal-view').innerText = sealVal;
+            }
+
+            if (urlParams.has('border')) {
+                const borderVal = decodeURIComponent(urlParams.get('border'));
+                setBorder('border-' + borderVal, null, borderVal);
+            }
+
+            // Ocultar la sección de galería si no hay imágenes
+            const grid = document.getElementById('gallery-grid');
+            if (grid.children.length === 0) {
+                document.querySelector('.gallery-section').style.display = 'none';
+            }
         }
-        if (urlParams.has('date')) {
-            document.getElementById('event-date').value = decodeURIComponent(urlParams.get('date'));
-        }
+        
         updateCountdown();
     };
 </script>
